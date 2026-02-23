@@ -154,14 +154,14 @@ function displayProducts(list){
         container.innerHTML += `
         <div class="product-card scroll-animate">
             <span class="badge">💥Promotion</span>
-           <img src="${p.photo || 'default-product.png'}" alt="${p.name || 'Produit'}">
+            <img src="${p.photo || 'default-product.png'}" alt="${p.name || 'Produit'}">
             <div class="product-info">
                 <h5>${p.brand || "DEKORA"}</h5>
                 <h4>${p.name || "Nom inconnu"}</h4>
                 <p class="price">${p.price !== undefined ? p.price+" €":"Prix indisponible"}</p>
                 <p class="stock">EN STOCK</p>
                 <button class="add-cart" onclick='openModal(JSON.parse(decodeURIComponent("${productJSON}")))'>
-                    commander
+                    Ajouter au Panier
                 </button>
             </div>
         </div>`;
