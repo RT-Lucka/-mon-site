@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nos Produits - Planète Gâteau</title>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+/* ===== Global ===== */
+* { box-sizing: border-box; margin:0; padding:0; font-family: Arial, sans-serif; }
+body { background: #ffb6c1; color: #333; }
+/* ===== Header ===== */
+header { position: fixed; top:0; left:0; width:100%; z-index:1000; background: linear-gradient(90deg,#ffb6c1,#c0f0f0); padding:15px 20px; display:flex; align-items:center; justify-content:space-between; box-shadow:0 4px 8px rgba(0,0,0,0.1);}
+.logo { display:flex; align-items:center; gap:12px; }
+.logo-badge { width:52px; height:52px; border-radius:50%; display:flex; align-items:center; justify-content:center;}
+.logo-badge img { width:100%; height:100%; object-fit:contain; border-radius:50%; }
+.logo-name { display:flex; flex-direction:column; line-height:1;}
+.logo-name .main { font-family:'Playfair Display', serif; font-size:22px; font-weight:700; color:#fff; letter-spacing:1px;}
+.logo-name .sub { font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;color:#ffe4ef;letter-spacing:3px;text-transform:uppercase;}
+.search-bar input { padding:8px 12px; width:300px; border-radius:20px; border:1px solid #ff69b4;}
+.account-cart button { background:#ff69b4;color:#fff;border:none;padding:8px 15px;border-radius:20px;cursor:pointer;margin-left:5px; }
+/* Breadcrumb */
+.breadcrumb { margin:100px 20px 15px 20px; font-size:14px; color:#555;}
+.breadcrumb a { text-decoration:none; color:#555; margin-right:5px; }
+/* Page header */
+.page-header { background: linear-gradient(135deg,#ffb6c1,#c0f0f0); padding:40px 20px; border-radius:0 0 30px 30px; display:flex; align-items:center; gap:20px;}
+.page-header img { width:120px; height:120px; border-radius:10px; object-fit:cover; background:transparent; animation: floatRotate 4s infinite ease-in-out;}
+.page-header h1 { color:#e60073; font-size:32px;}
+.page-header p { max-width:600px;}
+/* Main & Sidebar */
+main { display:flex; padding:20px; gap:20px;}
+.sidebar { width:250px; padding:20px; border-radius:10px;}
+.sidebar h3 { margin-bottom:10px; color:#e60073; }
+.sidebar label { display:block; margin:10px 0 5px; font-weight:bold;}
+.sidebar select { width:100%; padding:6px; }
+/* Products */
+.products { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:20px; flex:1;}
+.product-card { background:#fff; border-radius:15px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.1); text-align:center; position:relative; transition: transform 0.3s;}
+.product-card:hover { transform:translateY(-5px);}
+.product-card .badge { position:absolute; top:10px; left:10px; background:#ffee00; color:#000; font-size:12px; font-weight:bold; padding:5px 10px; border-radius:10px;}
+.product-card img { width:100%; height:180px; object-fit:contain; background:#f8f8f8;}
+.product-info { padding:10px 15px; }
+.product-info h5 { font-size:12px; color:#999; margin-bottom:5px; text-transform:uppercase; }
+.product-info h4 { font-size:14px; color:#333; margin-bottom:8px;}
+.product-info .price { font-size:16px; color:#e60073; font-weight:bold; margin-bottom:5px;}
+.product-info .stock { font-size:12px; color:#00cfff; margin-bottom:10px;}
+.product-info .add-cart { background:#ff69b4; color:#fff; border:none; padding:8px 12px; border-radius:10px; cursor:pointer; font-weight:bold; width:100%; transition: background 0.2s;}
+.product-info .add-cart:hover { background:#e60073;}
+/* Tartes */
+.tartes-section { padding:20px; margin:20px; border-radius:15px;}
+.tartes-section h2 { color:#e60073; margin-bottom:15px;}
+.tartes-container { display:flex; overflow-x:auto; gap:20px; padding-bottom:10px; scroll-behavior:smooth; -webkit-overflow-scrolling:touch; scroll-snap-type:x mandatory;}
+.tartes-container::-webkit-scrollbar { display:none;}
+.tartes-card { flex:0 0 auto; width:180px; height:250px; background:#fff; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.1); text-align:center; transition:transform 0.3s; scroll-snap-align:start;}
+.tartes-card:hover { transform:translateY(-5px);}
+.tartes-card img { width:100%; height:120px; object-fit:cover; border-radius:10px 10px 0 0;}
+.tartes-card .info { padding:10px;}
+.tartes-card .info h4 { font-size:14px; color:#333; margin-bottom:5px;}
+.tartes-card .info p { font-size:13px; color:#e60073; font-weight:bold;}
+/* Modal */
+.modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:2000; justify-content:center; align-items:center;}
+.modal-content { background:#fff; padding:25px; width:320px; border-radius:15px; animation: popup 0.3s ease;}
+@keyframes popup { from { transform:scale(0.8); opacity:0;} to{ transform:scale(1); opacity:1;}}
+.close-modal { float:right; font-size:22px; cursor:pointer; color:#e60073;}
+.modal-content h3 { text-align:center; margin-bottom:15px; color:#e60073;}
+.modal-content input, .modal-content textarea { width:100%; padding:10px; margin-bottom:12px; border-radius:10px; border:1px solid #ccc;}
+.modal-content textarea { resize:none; height:80px;}
+.modal-content button { width:100%; background:#ff69b4; color:#fff; border:none; padding:10px; border-radius:12px; cursor:pointer; font-weight:bold;}
+.modal-content button:hover { background:#e60073;}
+@keyframes floatRotate { 0% {transform:translateY(10px) rotate(0deg);}25% {transform:translateY(-50px) rotate(3deg);}50% {transform:translateY(0) rotate(0deg);}75% {transform:translateY(50px) rotate(-3deg);}100% {transform:translateY(0) rotate(0deg);} }
+
+
+
+/* ===== Responsive ===== */
+@media(max-width: 1024px) {
+    .search-bar input { width: 200px; }
+    /* Ajuste légèrement la largeur minimale des cartes pour garder le style */
+    .products { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+}
+
+@media(max-width: 768px) {
+    header { flex-direction: column; gap: 10px; text-align: center; }
+    .search-bar input { width: 100%; }
+    .account-cart { justify-content: center; width: 100%; gap: 10px; }
+    main { flex-direction: column; margin-top: 20px; }
+    .sidebar { width: 100%; }
+
+    .products { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+
+    /* Ajuster les cartes produit */
+    .product-card img { height: 150px; }
+    .product-info h4 { font-size: 13px; }
+    .product-info .price { font-size: 14px; }
+    .product-info .stock { font-size: 11px; }
+    .product-info .add-cart { padding: 6px; font-size: 13px; }
+
+    .page-header { flex-direction: column; text-align: center; padding: 40px 15px 25px 15px; gap: 15px; }
+    .page-header img { width: 200px; height: 200px; margin-top: 80px; margin-bottom: 15px; }
+    .page-header h1 { font-size: 26px; }
+    .breadcrumb { text-align: center; margin: 10px; }
+        .logo-badge {
+        width: 55px;
+        height: 55px;
+    }
+}
+
+@media(max-width: 480px) {
+    .products { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+    .product-card img { height: 120px; }
+    .product-info h5 { font-size: 10px; }
+    .product-info h4 { font-size: 12px; }
+    .product-info .price { font-size: 13px; }
+    .product-info .stock { font-size: 10px; }
+    .product-info .add-cart { padding: 5px; font-size: 12px; }
+}
+</style>
+
+<script>
+// ===== Firebase =====
+const firebaseConfig = {
+    apiKey: "AIzaSyAdCpUl04Y5Pe0npioR5_Qc93clRH5VdbU",
+    authDomain: "planete-gateau-5743b.firebaseapp.com",
+    projectId: "planete-gateau-5743b",
+    storageBucket: "planete-gateau-5743b.appspot.com",
+    messagingSenderId: "161229110835",
+    appId: "1:161229110835:web:6069869a0b98f1a7e56d46",
+    measurementId: "G-VJ6ZJPGNSB"
+};
+const app = firebase.initializeApp(firebaseConfig);
+const analytics = firebase.analytics(app);
+const db = firebase.firestore();
+
+// ===== Produits =====
+let allProducts = [];
+db.collection("products").orderBy("createdAt","desc").onSnapshot(snapshot=>{
+    allProducts = snapshot.docs.map(doc=>({id:doc.id,...doc.data()}));
+    displayProducts(allProducts);
+    displayTartes(allProducts);
+});
+
+function displayProducts(list){
+    const container=document.getElementById("products");
+    container.innerHTML="";
+    list.forEach(p=>{
+        const productJSON = encodeURIComponent(JSON.stringify(p));
+        container.innerHTML += `
+        <div class="product-card scroll-animate">
+            <span class="badge">💥Promotion</span>
+            <img src="${p.photo || 'default-product.png'}" alt="${p.name || 'Produit'}">
+            <div class="product-info">
+                <h5>${p.brand || "DEKORA"}</h5>
+                <h4>${p.name || "Nom inconnu"}</h4>
+                <p class="price">${p.price !== undefined ? p.price+" €":"Prix indisponible"}</p>
+                <p class="stock">EN STOCK</p>
+                <button class="add-cart" onclick='openModal(JSON.parse(decodeURIComponent("${productJSON}")))'>
+                    Ajouter au Panier
+                </button>
+            </div>
+        </div>`;
+    });
+}
+
+function displayTartes(list){
+    const tartesContainer=document.getElementById("tartes-container");
+    tartesContainer.innerHTML="";
+    const tartes=list.filter(p=>p.type && p.type.toLowerCase().includes("tarte"));
+    tartes.forEach(t=>{
+        const photo = t.photo || "default-tarte.png";
+        const card=document.createElement("div");
+        card.className="tartes-card";
+        card.innerHTML=`<img src="${photo}" alt="${t.name || "Tarte"}"><div class="info"><h4>${t.name}</h4><p>${t.price} €</p></div>`;
+        tartesContainer.appendChild(card);
+    });
+}
+
+// ===== Filtre & recherche =====
+function filterType(type){ displayProducts(type ? allProducts.filter(p=>p.type===type) : allProducts);}
+function searchProduct(text){ displayProducts(allProducts.filter(p=>p.name.toLowerCase().includes(text.toLowerCase()))); }
+
+// ===== Modal =====
+let selectedProduct=null;
+function openModal(product){ selectedProduct=product; document.getElementById("orderModal").style.display="flex";}
+function closeModal(){ document.getElementById("orderModal").style.display="none";}
+
+function displayOrdersRealtime() {
+    const orderList = document.getElementById("orderList");
+    if(!orderList) return;
+
+    db.collection("orders").orderBy("createdAt", "desc")
+      .onSnapshot(snapshot => {
+        orderList.innerHTML = "";
+        if(snapshot.empty){
+            orderList.innerHTML = "<p>Aucune commande pour le moment.</p>";
+            return;
+        }
+
+        snapshot.forEach((doc, index) => {
+            const o = doc.data();
+            orderList.innerHTML += `
+                <div class="product">
+                    <strong>Commande #${index + 1}</strong><br>
+                    Produit : ${o.product ? o.product.name : "Non défini"}<br>
+                    Nom : ${o.name || "-"}<br>
+                    Téléphone : ${o.phone || "-"}<br>
+                    Message : ${o.message || "-"}<br>
+                    Date de commande : ${o.dateCommande || "-"}<br>
+                    Date de rendu : ${o.dateRendu || "-"}<br>
+                    <button class="delete-btn" onclick="deleteOrder('${doc.id}')">Supprimer</button>
+                </div>
+            `;
+        });
+    });
+}
+
+function deleteOrder(docId) {
+    if(!docId) return;
+    db.collection("orders").doc(docId).delete()
+      .then(()=>console.log("Commande supprimée"))
+      .catch(err=>alert("Erreur : "+err));
+}
+
+// Appeler au chargement
+displayOrdersRealtime();
+
+// ===== Scroll Animation =====
+function scrollAnimation(){ document.querySelectorAll('.scroll-animate').forEach(item=>{ const triggerBottom=window.innerHeight*0.85; const itemTop=item.getBoundingClientRect().top; item.classList.toggle('visible',itemTop<triggerBottom); });}
+window.addEventListener('scroll',scrollAnimation);
+scrollAnimation();
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    document.getElementById("orderForm").addEventListener("submit", function(e){
+        e.preventDefault();
+
+        if(!selectedProduct){
+            alert("Aucun produit sélectionné");
+            return;
+        }
+
+        const order = {
+            product: {
+                id: selectedProduct.id,
+                name: selectedProduct.name,
+                price: selectedProduct.price
+            },
+            name: document.getElementById("customerName").value,
+            phone: document.getElementById("customerPhone").value,
+            message: document.getElementById("customerMessage").value,
+            dateCommande: new Date().toLocaleDateString("fr-FR"),
+            dateRendu: document.getElementById("renduInput").value,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+
+        db.collection("orders").add(order)
+          .then(()=>{
+              alert("Commande envoyée ✅");
+              document.getElementById("orderForm").reset();
+              closeModal();
+          })
+          .catch(err=>{
+              alert("Erreur : " + err.message);
+          });
+    });
+
+});
+</script>
+</head>
+
+<body>
+
+<header>
+<div class="logo">
+    <div class="logo-badge"><img src="IMG-20260220-WA0005.jpg" alt="Logo Planète Gâteau"></div>
+    <div class="logo-name"><span class="main">Planète</span><span class="sub">Gâteau</span></div>
+</div>
+<div class="search-bar"><input type="text" placeholder="Que recherchez-vous ?" onkeyup="searchProduct(this.value)"></div>
+<div class="account-cart"><button>Mon compte</button><button>🛒</button></div>
+</header>
+
+<div class="breadcrumb">Cake Design > <span>Nos Produits</span></div>
+
+<div class="page-header">
+    <img src="bg_removed_1771599824404_xhdm93.png" alt="Produit" class="scroll-animate-img">
+    <div>
+        <h1><i>L’Art de la Pâtisserie</i></h1>
+        <p>Commandez vos pâtisseries préférées pour vos moments d’exception</p>
+    </div>
+</div>
+
+<main>
+    <section class="tartes-section">
+        <h2>Nos Tartes</h2>
+        <div class="tartes-container" id="tartes-container"></div>
+    </section>
+
+    <aside class="sidebar">
+        <h3>Filtre</h3>
+        <label>Catégorie</label>
+        <select onchange="filterType(this.value)">
+            <option value="">Toutes</option>
+            <option>Gâteaux</option>
+            <option>Gâteaux de cérémonie</option>
+            <option>Cupcakes</option>
+            <option>Viennoiseries</option>
+            <option>Salé</option>
+            <option>Tartes</option>
+            <option>Desserts</option>
+            <option>Boissons</option>
+        </select>
+    </aside>
+
+    <section class="products" id="products"></section>
+</main>
+
+<!-- Modal commande -->
+<div class="modal" id="orderModal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <h3>Commande rapide</h3>
+        <form id="orderForm">
+            <input type="text" id="customerName" placeholder="Votre nom" required>
+            <input type="tel" id="customerPhone" placeholder="Numéro de téléphone" required>
+            <textarea id="customerMessage" placeholder="Message (optionnel)"></textarea>
+            <div id="orderInfo">
+                <p>Date de commande : <span id="commandeDate"></span></p>
+                <label for="renduInput">Date de rendu estimée :</label>
+                <input type="date" id="renduInput" required>
+            </div>
+            <button type="submit">Envoyer</button>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

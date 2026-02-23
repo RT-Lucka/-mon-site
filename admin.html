@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin - Planète Gâteau</title>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+
+<style>
+body { font-family: Arial, sans-serif; background:#ffe4ef; margin:0; padding:0;}
+header { background:#e60073; color:#fff; padding:15px 20px; text-align:center;}
+header h1 { margin:0; font-size:24px;}
+.container { display:flex; gap:20px; padding:20px;}
+.section { flex:1; background:#fff; padding:20px; border-radius:15px; box-shadow:0 4px 10px rgba(0,0,0,0.1);}
+.section h2 { color:#e60073; margin-bottom:15px;}
+input, select, textarea { width:100%; padding:8px; margin-bottom:10px; border-radius:8px; border:1px solid #ccc;}
+button { background:#e60073; color:#fff; border:none; padding:10px 15px; border-radius:10px; cursor:pointer; margin-right:5px;}
+button:hover { background:#ff69b4;}
+table { width:100%; border-collapse:collapse; margin-top:10px;}
+th, td { border:1px solid #ccc; padding:8px; text-align:center;}
+th { background:#ffe4ef; color:#e60073;}
+tr:nth-child(even){background:#f9f9f9;}
+</style>
+
+<script>
+// ===== Firebase =====
+const firebaseConfig = {
+    apiKey: "AIzaSyAdCpUl04Y5Pe0npioR5_Qc93clRH5VdbU",
+    authDomain: "planete-gateau-5743b.firebaseapp.com",
+    projectId: "planete-gateau-5743b",
+    storageBucket: "planete-gateau-5743b.appspot.com",
+    messagingSenderId: "161229110835",
+    appId: "1:161229110835:web:6069869a0b98f1a7e56d46",
+    measurementId: "G-VJ6ZJPGNSB"
+};
+const app = firebase.initializeApp(firebaseConfig);
+const analytics = firebase.analytics(app);
+const db = firebase.firestore();
+
+const storage = firebase.storage();
+
+// ===== Produits =====
+function fetchProducts(){
+    db.collection("products").orderBy("createdAt","desc").onSnapshot(snapshot=>{
+        const tbody = document.getElementById("productsTableBody");
+        tbody.innerHTML="";
+        snapshot.docs.forEach(doc=>{
+            const p = {id:doc.id,...doc.data()};
+            tbody.innerHTML += `<tr>
+                <td>${p.name}</td>
+                <td>${p.brand || "DEKORA"}</td>
+                <td>${p.type || "—"}</td>
+                <td>${p.price || "—"} €</td>
+                <td><button onclick="deleteProduct('${p.id}')">Supprimer</button></td>
+            </tr>`;
+        });
+    });
+}
+
+function addProduct(e){
+    e.preventDefault();
+    const product = {
+        name: document.getElementById("prodName").value,
+        brand: document.getElementById("prodBrand").value,
+        type: document.getElementById("prodType").value,
+        price: parseFloat(document.getElementById("prodPrice").value),
+        photo: document.getElementById("prodPhoto").value,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+    db.collection("products").add(product)
+      .then(()=>{ alert("Produit ajouté ✅"); e.target.reset(); })
+      .catch(err=>alert("Erreur : "+err));
+}
+
+function deleteProduct(id){
+    if(confirm("Voulez-vous vraiment supprimer ce produit ?")){
+        db.collection("products").doc(id).delete()
+        .then(()=>alert("Produit supprimé ✅"))
+        .catch(err=>alert("Erreur : "+err));
+    }
+}
+
+// ===== Commandes =====
+function fetchOrders(){
+    db.collection("orders").orderBy("createdAt","desc").onSnapshot(snapshot=>{
+        const tbody = document.getElementById("ordersTableBody");
+        tbody.innerHTML="";
+        snapshot.docs.forEach(doc=>{
+            const o = doc.data();
+            tbody.innerHTML += `<tr>
+                <td>${o.product?.name || "—"}</td>
+                <td>${o.name || "—"}</td>
+                <td>${o.phone || "—"}</td>
+                <td>${o.message || ""}</td>
+                <td>${o.dateCommande || ""}</td>
+                <td>${o.dateRendu || ""}</td>
+            </tr>`;
+        });
+    });
+}
+
+window.onload = function(){
+    fetchProducts();
+    fetchOrders();
+}
+</script>
+
+</head>
+<body>
+
+<header>
+<h1>Admin - Planète Gâteau</h1>
+</header>
+
+<div class="container">
+
+    <div class="section">
+        <h2>Ajouter un produit</h2>
+        <form onsubmit="addProduct(event)">
+            <input type="text" id="prodName" placeholder="Nom du produit" required>
+            <input type="text" id="prodBrand" placeholder="Marque">
+            <input type="text" id="prodType" placeholder="Type (ex: Gâteau, Tarte)">
+            <input type="number" id="prodPrice" placeholder="Prix (€)" required step="0.01">
+            <input type="text" id="prodPhoto" placeholder="URL de l'image">
+            <button type="submit">Ajouter</button>
+        </form>
+    </div>
+
+    <div class="section">
+        <h2>Produits existants</h2>
+        <table>
+            <thead>
+                <tr><th>Nom</th><th>Marque</th><th>Type</th><th>Prix</th><th>Actions</th></tr>
+            </thead>
+            <tbody id="productsTableBody"></tbody>
+        </table>
+    </div>
+
+</div>
+
+<div class="container">
+    <div class="section" style="flex:1.5;">
+        <h2>Commandes reçues</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Produit</th><th>Nom client</th><th>Téléphone</th><th>Message</th><th>Date commande</th><th>Date rendu</th>
+                </tr>
+            </thead>
+            <tbody id="ordersTableBody"></tbody>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>
