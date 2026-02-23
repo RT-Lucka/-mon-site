@@ -147,24 +147,39 @@ db.collection("products").orderBy("createdAt","desc").onSnapshot(snapshot=>{
 });
 
 function displayProducts(list){
-    const container=document.getElementById("products");
-    container.innerHTML="";
-    list.forEach(p=>{
-        const productJSON = encodeURIComponent(JSON.stringify(p));
-        container.innerHTML += `
-        <div class="product-card scroll-animate">
+    const container = document.getElementById("products");
+    container.innerHTML = "";
+
+    list.forEach(async (p) => {
+        let photoURL = p.photo || 'https://images.unsplash.com/photo-1606755962775-6740a207e9f8?auto=format&fit=crop&w=500&q=60';
+
+        // Si p.photo est un chemin Firebase Storage, récupérer l'URL
+        if(p.photo && !p.photo.startsWith("http")) {
+            try {
+                const storageRef = firebase.storage().ref(p.photo);
+                photoURL = await storageRef.getDownloadURL();
+            } catch(e){
+                console.log("Erreur récupération image :", e);
+            }
+        }
+
+        const card = document.createElement("div");
+        card.className = "product-card scroll-animate";
+        card.innerHTML = `
             <span class="badge">💥Promotion</span>
-            <img src="${p.photo || 'default-product.png'}" alt="${p.name || 'Produit'}">
+            <img src="${photoURL}" alt="${p.name || 'Produit'}">
             <div class="product-info">
                 <h5>${p.brand || "DEKORA"}</h5>
                 <h4>${p.name || "Nom inconnu"}</h4>
                 <p class="price">${p.price !== undefined ? p.price+" €":"Prix indisponible"}</p>
                 <p class="stock">EN STOCK</p>
-                <button class="add-cart" onclick='openModal(JSON.parse(decodeURIComponent("${productJSON}")))'>
-                    Ajouter au Panier
-                </button>
+                <button class="add-cart">Ajouter au Panier</button>
             </div>
-        </div>`;
+        `;
+        container.appendChild(card);
+
+        const button = card.querySelector(".add-cart");
+        button.addEventListener("click", () => openModal(p));
     });
 }
 
