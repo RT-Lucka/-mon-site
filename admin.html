@@ -62,55 +62,21 @@ function fetchProducts(){
     });
 }
 
-function addProduct(e) {
+function addProduct(e){
     e.preventDefault();
-
-    const fileInput = document.getElementById("prodPhotoFile");
-    const file = fileInput.files[0];
-
-    if(!file){
-        alert("Veuillez choisir une image");
-        return;
-    }
-
-    // Créer un chemin unique dans Storage
-    const storageRef = firebase.storage().ref('products/' + Date.now() + '_' + file.name);
-
-    // Upload du fichier
-    const uploadTask = storageRef.put(file);
-
-    uploadTask.on('state_changed', 
-        snapshot => {
-            // Optionnel : progression
-            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            console.log('Upload is ' + progress + '% done');
-        }, 
-        error => {
-            alert("Erreur upload image : " + error.message);
-        }, 
-        () => {
-            // Upload terminé, récupérer l'URL
-            uploadTask.snapshot.ref.getDownloadURL().then(url => {
-                const product = {
-                    name: document.getElementById("prodName").value,
-                    brand: document.getElementById("prodBrand").value,
-                    type: document.getElementById("prodType").value,
-                    price: parseFloat(document.getElementById("prodPrice").value),
-                    photo: url,  // ← URL générée par Firebase Storage
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                };
-
-                // Ajouter produit à Firestore
-                db.collection("products").add(product)
-                  .then(()=>{ 
-                      alert("Produit ajouté ✅"); 
-                      e.target.reset(); 
-                  })
-                  .catch(err=>alert("Erreur : "+err));
-            });
-        }
-    );
+    const product = {
+        name: document.getElementById("prodName").value,
+        brand: document.getElementById("prodBrand").value,
+        type: document.getElementById("prodType").value,
+        price: parseFloat(document.getElementById("prodPrice").value),
+        photo: document.getElementById("prodPhoto").value,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+    db.collection("products").add(product)
+      .then(()=>{ alert("Produit ajouté ✅"); e.target.reset(); })
+      .catch(err=>alert("Erreur : "+err));
 }
+
 function deleteProduct(id){
     if(confirm("Voulez-vous vraiment supprimer ce produit ?")){
         db.collection("products").doc(id).delete()
@@ -160,7 +126,7 @@ window.onload = function(){
             <input type="text" id="prodBrand" placeholder="Marque">
             <input type="text" id="prodType" placeholder="Type (ex: Gâteau, Tarte)">
             <input type="number" id="prodPrice" placeholder="Prix (€)" required step="0.01">
-         <input type="file" id="prodPhotoFile" accept="image/*" required>
+            <input type="text" id="prodPhoto" placeholder="URL de l'image">
             <button type="submit">Ajouter</button>
         </form>
     </div>
