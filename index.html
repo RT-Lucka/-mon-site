@@ -440,6 +440,27 @@ main { display:flex; padding:20px; gap:20px;}
   }
 }
 }
+    .bar {
+  height: 6px;
+  background: #eee;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.fill {
+  height: 100%;
+  background: linear-gradient(90deg, #e67e22, #c0392b);
+  border-radius: 6px;
+  animation: grow 1.2s ease forwards;
+}
+
+.w80 { width: 80%; }
+.w95 { width: 95%; }
+.w70 { width: 70%; }
+
+@keyframes grow {
+  from { width: 0; }
+}
 </style>
 
 <script>
@@ -668,12 +689,25 @@ document.addEventListener("DOMContentLoaded", function () {
 <div class="search-bar"><input type="text" placeholder="Que recherchez-vous ?" onkeyup="searchProduct(this.value)"></div>
 <div class="account-cart"><button>Mon compte</button><button>🛒</button></div>
 </header>
-        <section class="stats">
-  <div class="stat-card">🍰 <strong>120+</strong><br>Produits artisanaux</div>
-  <div class="stat-card">💖 <strong>3 500+</strong><br>Clients satisfaits</div>
-  <div class="stat-card">🚚 <strong>24h</strong><br>Livraison rapide</div>
-</section>
+<section class="stats progress">
+  <div class="stat-card">
+    <span>🍰</span>
+    <p>Produits artisanaux</p>
+    <div class="bar"><div class="fill w80"></div></div>
+  </div>
 
+  <div class="stat-card">
+    <span>💖</span>
+    <p>Clients satisfaits</p>
+    <div class="bar"><div class="fill w95"></div></div>
+  </div>
+
+  <div class="stat-card">
+    <span>🚚</span>
+    <p>Livraison rapide</p>
+    <div class="bar"><div class="fill w70"></div></div>
+  </div>
+</section>
 <div class="breadcrumb">Cake Design > <span>Nos Produits</span></div>
 
 <div class="page-header">
