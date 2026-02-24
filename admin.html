@@ -124,7 +124,17 @@ window.onload = function(){
         <form onsubmit="addProduct(event)">
             <input type="text" id="prodName" placeholder="Nom du produit" required>
             <input type="text" id="prodBrand" placeholder="Marque">
-            <input type="text" id="prodType" placeholder="Type (ex: Gâteau, Tarte)">
+     <select id="prodType" required>
+    <option value="">— Choisir une catégorie —</option>
+    <option value="Gâteaux">Gâteaux</option>
+    <option value="Gâteaux de cérémonie">Gâteaux de cérémonie</option>
+    <option value="Cupcakes">Cupcakes</option>
+    <option value="Viennoiseries">Viennoiseries</option>
+    <option value="Salé">Salé</option>
+    <option value="Tartes">Tartes</option>
+    <option value="Desserts">Desserts</option>
+    <option value="Boissons">Boissons</option>
+</select>
             <input type="number" id="prodPrice" placeholder="Prix (€)" required step="0.01">
             <input type="text" id="prodPhoto" placeholder="URL de l'image">
             <button type="submit">Ajouter</button>
