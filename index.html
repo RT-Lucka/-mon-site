@@ -439,7 +439,7 @@ main { display:flex; padding:20px; gap:20px;}
     font-size: 22px;
   }
 }
-}
+
     .bar {
   height: 6px;
   background: #eee;
@@ -461,6 +461,76 @@ main { display:flex; padding:20px; gap:20px;}
 @keyframes grow {
   from { width: 0; }
 }
+/* Liste matériels style Messenger (mobile) */
+.materiel-list {
+  display: none; /* par défaut invisible */
+  overflow-x: auto;
+  padding: 10px 15px;
+  gap: 12px;
+  display: flex;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+.materiel-list::-webkit-scrollbar {
+  display: none; /* cacher la scrollbar */
+}
+
+.materiel-item {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 12px;
+  gap: 6px;
+}
+
+.materiel-item img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ff69b4;
+  padding: 4px;
+  background: #fff0f6;
+  transition: transform 0.3s;
+}
+
+.materiel-item img:hover {
+  transform: scale(1.1);
+}
+@media (max-width: 768px) {
+  .materiel-list {
+    display: flex;
+    margin-top: 10px;   /* ← décale la liste vers le bas */
+    padding-bottom: 10px; /* pour respirer en bas */
+  }
+}
+@media (max-width: 768px) {
+  body {
+    padding-top: 180px; /* augmente si nécessaire selon la taille du header */
+  }
+}
+.event-banner {
+  width: 100%;
+  height: 400px; /* ajuste la hauteur pour desktop */
+  background-image: url('fm.jpg');
+  background-size: cover;     /* couvre toute la zone sans déformer */
+  background-position: center; /* centre l’image pour éviter le recadrage */
+  background-repeat: no-repeat;
+  border-radius: 15px;        /* optionnel */
+    image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
+/* Responsive mobile */
+@media (max-width: 768px) {
+  .event-banner {
+    height: 250px; /* moins haut sur mobile */
+  }
+}
+
+
 </style>
 
 <script>
@@ -689,34 +759,30 @@ document.addEventListener("DOMContentLoaded", function () {
 <div class="search-bar"><input type="text" placeholder="Que recherchez-vous ?" onkeyup="searchProduct(this.value)"></div>
 <div class="account-cart"><button>Mon compte</button><button>🛒</button></div>
 </header>
-<section class="stats progress">
-  <div class="stat-card">
-    <span>🍰</span>
-    <p>Produits artisanaux</p>
-    <div class="bar"><div class="fill w80"></div></div>
-  </div>
-
-  <div class="stat-card">
-    <span>💖</span>
-    <p>Clients satisfaits</p>
-    <div class="bar"><div class="fill w95"></div></div>
-  </div>
-
-  <div class="stat-card">
-    <span>🚚</span>
-    <p>Livraison rapide</p>
-    <div class="bar"><div class="fill w70"></div></div>
-  </div>
-</section>
+<!-- Liste des matériels (mobile seulement) -->
+<div class="materiel-list">
+  <div class="materiel-item"><img src="muffin.webp" alt="Spatule"><span>Muffin</span></div>
+  <div class="materiel-item"><img src="Chubby.jpg" alt="Fouet"><span>chocolat</span></div>
+  <div class="materiel-item"><img src="cookiers.webp" alt="Moule"><span>Brownie</span></div>
+  <div class="materiel-item"><img src="Tartelette.avif" alt="Poche à douille"><span>Poche</span></div>
+  <div class="materiel-item"><img src="Haiti.jpeg" alt="Batteur"><span>Batteur</span></div>
+  <div class="materiel-item"><img src="choconoir.jpeg" alt="Rouleau"><span>Rouleau</span></div>
+  <div class="materiel-item"><img src="esquima.jpg" alt="Tampon"><span>Esquimaux</span></div>
+  <div class="materiel-item"><img src="img/spatule-cuillere.png" alt="Spatule cuillère"><span>Spatule cuillère</span></div>
+</div>
 <div class="breadcrumb">Cake Design > <span>Nos Produits</span></div>
-
+<!-- 
 <div class="page-header">
     <img src="bg_removed_1771599824404_xhdm93.png" alt="Produit" class="scroll-animate-img">
     <div>
         <h1><i>L’Art de la Pâtisserie</i></h1>
         <p>Commandez vos pâtisseries préférées pour vos moments d’exception</p>
     </div>
+    
 </div>
+-->
+
+<section class="event-banner" id="eventBanner"></section>
 
 <main>
     <section class="tartes-section">
@@ -835,5 +901,39 @@ document.addEventListener("DOMContentLoaded", function () {
     </div>
 
 </footer>
+   <!--
+<script>
+  //   const eventBannerImg = document.getElementById("eventBanner").querySelector("img");
+
+// Récupérer le mois courant (0 = janvier, 11 = décembre)
+const currentMonth = new Date().getMonth(); 
+
+// Définir l'image selon le mois
+let bannerImage = "vt2.jpg";
+let altText = "Événement du moment";
+
+switch(currentMonth) {
+    case 1: // Février
+        bannerImage = "vt2.jpg";
+        altText = "Saint-Valentin";
+        break;
+    case 3: // Avril
+        bannerImage = "img/paques-banner.jpg";
+        altText = "Pâques";
+        break;
+    case 11: // Décembre
+        bannerImage = "img/noel-banner.jpg";
+        altText = "Noël";
+        break;
+    // tu peux ajouter d'autres mois si tu veux
+    default:
+        bannerImage = "img/default-event.png";
+        altText = "Événement du moment";
+}
+
+eventBannerImg.src = bannerImage;
+eventBannerImg.alt = altText;
+</script>
+-->
 </body>
 </html>
