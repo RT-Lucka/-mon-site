@@ -61,16 +61,131 @@ main { display:flex; padding:20px; gap:20px;}
 .product-info .add-cart { background:#ff69b4; color:#fff; border:none; padding:8px 12px; border-radius:10px; cursor:pointer; font-weight:bold; width:100%; transition: background 0.2s;}
 .product-info .add-cart:hover { background:#e60073;}
 /* Tartes */
-.tartes-section { padding:20px; margin:20px; border-radius:15px;}
-.tartes-section h2 { color:#e60073; margin-bottom:15px;}
-.tartes-container { display:flex; overflow-x:auto; gap:20px; padding-bottom:10px; scroll-behavior:smooth; -webkit-overflow-scrolling:touch; scroll-snap-type:x mandatory;}
-.tartes-container::-webkit-scrollbar { display:none;}
-.tartes-card { flex:0 0 auto; width:180px; height:250px; background:#fff; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.1); text-align:center; transition:transform 0.3s; scroll-snap-align:start;}
-.tartes-card:hover { transform:translateY(-5px);}
-.tartes-card img { width:100%; height:120px; object-fit:cover; border-radius:10px 10px 0 0;}
-.tartes-card .info { padding:10px;}
-.tartes-card .info h4 { font-size:14px; color:#333; margin-bottom:5px;}
-.tartes-card .info p { font-size:13px; color:#e60073; font-weight:bold;}
+/* ===== Tartes améliorées ===== */
+.tarte-card {
+  background: #fff;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+  text-align: center;
+  transition: transform 0.3s, box-shadow 0.3s;
+  position: relative;
+  width: 180px;
+  flex: 0 0 auto;
+}
+
+.tarte-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.18);
+}
+
+.tarte-card img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  border-bottom: 1px solid #eee;
+}
+
+.tarte-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: #ff69b4;
+  color: #fff;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 5px 8px;
+  border-radius: 10px;
+  z-index: 2;
+}
+
+.tarte-content {
+  padding: 10px;
+}
+
+.tarte-content h3 {
+  font-size: 14px;
+  color: #e60073;
+  margin-bottom: 5px;
+}
+
+.tarte-stars {
+  color: #f1c40f;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.tarte-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 5px;
+}
+
+.tarte-price {
+  font-weight: bold;
+  color: #e60073;
+  font-size: 14px;
+}
+
+.tarte-footer .add-cart {
+  flex: 1;
+  background: #ff69b4;
+  color: #fff;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.tarte-footer .add-cart:hover {
+  background: #e60073;
+  transform: translateY(-2px);
+}
+
+/* ===== Conteneur horizontal scroll ===== */
+.tartes-container {
+  display: flex;
+  overflow-x: auto;
+  gap: 15px;
+  padding-bottom: 10px;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tartes-container::-webkit-scrollbar {
+  display: none;
+}
+
+/* ===== Responsive ===== */
+@media(max-width: 768px) {
+  .tarte-card {
+    width: 140px;
+  }
+
+  .tarte-card img {
+    height: 120px;
+  }
+
+  .tarte-content h3 {
+    font-size: 13px;
+  }
+
+  .tarte-stars {
+    font-size: 12px;
+  }
+
+  .tarte-price {
+    font-size: 13px;
+  }
+
+  .tarte-footer .add-cart {
+    font-size: 12px;
+    padding: 5px 8px;
+  }
+}
 /* Modal */
 .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:2000; justify-content:center; align-items:center;}
 .modal-content { background:#fff; padding:25px; width:320px; border-radius:15px; animation: popup 0.3s ease;}
@@ -530,6 +645,118 @@ main { display:flex; padding:20px; gap:20px;}
   }
 }
 
+.materiel-wrapper {
+  position: relative;
+}
+
+/* Boutons scroll */
+.scroll-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #ff69b4;
+  color: #fff;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  font-size: 22px;
+  cursor: pointer;
+  z-index: 5;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  display: none; /* caché par défaut */
+}
+
+.scroll-btn.left { left: 5px; }
+.scroll-btn.right { right: 5px; }
+
+.scroll-btn:hover {
+  background: #e60073;
+}
+
+/* Mobile uniquement */
+@media (max-width: 768px) {
+  .scroll-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+/* Bouton menu */
+.menu-btn {
+  background: #ff69b4;
+  color: #fff;
+  border: none;
+  font-size: 22px;
+  padding: 8px 12px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+/* Overlay sombre */
+.menu-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: none;
+  z-index: 1500;
+}
+
+/* Menu latéral */
+.side-menu {
+  position: fixed;
+  top: 0;
+  left: -280px; /* caché */
+  width: 280px;
+  height: 100vh;
+  background: #fff0f6;
+  box-shadow: 4px 0 20px rgba(0,0,0,0.2);
+  z-index: 1600;
+  padding: 20px;
+  transition: left 0.35s ease;
+}
+
+/* Menu ouvert */
+.side-menu.open {
+  left: 0;
+}
+
+.menu-overlay.show {
+  display: block;
+}
+
+/* Header menu */
+.side-menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 18px;
+  margin-bottom: 20px;
+}
+
+/* Liens */
+.side-menu a {
+  display: block;
+  text-decoration: none;
+  color: #c278a4;
+  font-weight: bold;
+  padding: 12px 0;
+  border-bottom: 1px solid #ffd1e8;
+    border-radius: 10px;
+}
+.side-menu a:hover {
+  background: #ffe6f0;
+}
+@media (max-width: 768px) {
+  .menu-btn {
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    z-index: 2000;
+    margin-left: 0;
+  }
+}
 
 </style>
 
@@ -623,19 +850,44 @@ loveBtn.addEventListener("click", (e) => {
     });
 }
 
-function displayTartes(list){
-    const tartesContainer=document.getElementById("tartes-container");
-    tartesContainer.innerHTML="";
-    const tartes=list.filter(p=>p.type && p.type.toLowerCase().includes("tarte"));
-    tartes.forEach(t=>{
+function displayTartes(list) {
+    const tartesContainer = document.getElementById("tartes-container");
+    tartesContainer.innerHTML = "";
+
+    const tartes = list.filter(p => p.type && p.type.toLowerCase().includes("tarte"));
+
+    tartes.forEach(t => {
         const photo = t.photo || "default-tarte.png";
-        const card=document.createElement("div");
-        card.className="tartes-card";
-        card.innerHTML=`<img src="${photo}" alt="${t.name || "Tarte"}"><div class="info"><h4>${t.name}</h4><p>${t.price} €</p></div>`;
+        const price = t.price || "N/A";
+        const name = t.name || "Tarte";
+        const stars = t.stars || 4;
+        const badge = t.badge || "";
+
+        const card = document.createElement("div");
+        card.className = "tarte-card";
+
+        card.innerHTML = `
+            ${badge ? `<div class="tarte-badge">${badge}</div>` : ""}
+            <img src="${photo}" alt="${name}">
+            <div class="tarte-content">
+                <h3>${name}</h3>
+                <div class="tarte-stars">${"★".repeat(stars) + "☆".repeat(5 - stars)}</div>
+                <div class="tarte-footer">
+                    <span class="tarte-price">${price} €</span>
+                    <button class="add-cart">Commander</button>
+                </div>
+            </div>
+        `;
+
         tartesContainer.appendChild(card);
+
+        // Fonctionnement du bouton Commander
+        const orderBtn = card.querySelector(".add-cart");
+        orderBtn.addEventListener("click", () => {
+            openModal(t); // ouvre la modal de commande pour cette tarte
+        });
     });
 }
-
 // ===== Filtre & recherche =====
 function filterType(type){ displayProducts(type ? allProducts.filter(p=>p.type===type) : allProducts);}
 function searchProduct(text){ displayProducts(allProducts.filter(p=>p.name.toLowerCase().includes(text.toLowerCase()))); }
@@ -750,25 +1002,64 @@ document.addEventListener("DOMContentLoaded", function () {
 
 <body>
 
-<header>
+<header >
+    <div class="side-menu" id="sideMenu">
+  <div class="side-menu-header">
+    <span>Menu</span>
+    <button onclick="closeMenu()">✖</button>
+  </div>
+
+<a href="#">Accueil</a>
+<a href="#">Nos Produits</a>
+<a href="#">Promotions</a>
+
+<hr>
+
+<a href="#" onclick="filterType('Gâteaux'); closeMenu()">🍰 Gâteaux</a>
+<a href="#" onclick="filterType('Gâteaux de cérémonie'); closeMenu()">🎉 Gâteaux de cérémonie</a>
+<a href="#" onclick="filterType('Cupcakes'); closeMenu()">🧁 Cupcakes</a>
+<a href="#" onclick="filterType('Viennoiseries'); closeMenu()">🥐 Viennoiseries</a>
+<a href="#" onclick="filterType('Salé'); closeMenu()">🥪 Salé</a>
+<a href="#" onclick="filterType('Tartes'); closeMenu()">🥧 Tartes</a>
+<a href="#" onclick="filterType('Desserts'); closeMenu()">🍮 Desserts</a>
+<a href="#" onclick="filterType('Boissons'); closeMenu()">🥤 Boissons</a>
+
+<hr>
+
+<a href="#">Contact</a>
+</div>
+
+<div class="menu-overlay" id="menuOverlay" onclick="closeMenu()"></div>
 
 <div class="logo">
     <div class="logo-badge"><img src="IMG-20260220-WA0005.jpg" alt="Logo Planète Gâteau"></div>
     <div class="logo-name"><span class="main">Planète</span><span class="sub">Gâteau</span></div>
 </div>
 <div class="search-bar"><input type="text" placeholder="Que recherchez-vous ?" onkeyup="searchProduct(this.value)"></div>
-<div class="account-cart"><button>Mon compte</button><button>🛒</button></div>
+<div class="account-cart">
+  <!-- <button>Mon compte</button>
+  <button>🛒</button> -->
+  <button class="menu-btn" onclick="openMenu()">☰</button>
+</div>
 </header>
 <!-- Liste des matériels (mobile seulement) -->
-<div class="materiel-list">
-  <div class="materiel-item"><img src="muffin.webp" alt="Spatule"><span>Muffin</span></div>
-  <div class="materiel-item"><img src="Chubby.jpg" alt="Fouet"><span>chocolat</span></div>
-  <div class="materiel-item"><img src="cookiers.webp" alt="Moule"><span>Brownie</span></div>
-  <div class="materiel-item"><img src="Tartelette.avif" alt="Poche à douille"><span>Poche</span></div>
-  <div class="materiel-item"><img src="Haiti.jpeg" alt="Batteur"><span>Batteur</span></div>
-  <div class="materiel-item"><img src="choconoir.jpeg" alt="Rouleau"><span>Rouleau</span></div>
-  <div class="materiel-item"><img src="esquima.jpg" alt="Tampon"><span>Esquimaux</span></div>
-  <div class="materiel-item"><img src="img/spatule-cuillere.png" alt="Spatule cuillère"><span>Spatule cuillère</span></div>
+<div class="materiel-wrapper">
+
+  <button class="scroll-btn left" onclick="scrollMateriel(-1)">‹</button>
+
+  <div class="materiel-list" id="materielList">
+    <div class="materiel-item"><img src="muffin.webp"><span>Muffin</span></div>
+    <div class="materiel-item"><img src="Chubby.jpg"><span>Chocolat</span></div>
+    <div class="materiel-item"><img src="cookiers.webp"><span>Brownie</span></div>
+    <div class="materiel-item"><img src="Tartelette.avif"><span>Poche</span></div>
+    <div class="materiel-item"><img src="Haiti.jpeg"><span>Batteur</span></div>
+    <div class="materiel-item"><img src="choconoir.jpeg"><span>Rouleau</span></div>
+    <div class="materiel-item"><img src="esquima.jpg"><span>Esquimaux</span></div>
+    <div class="materiel-item"><img src="img/spatule-cuillere.png"><span>Spatule</span></div>
+  </div>
+
+  <button class="scroll-btn right" onclick="scrollMateriel(1)">›</button>
+
 </div>
 <div class="breadcrumb">Cake Design > <span>Nos Produits</span></div>
 <!-- 
@@ -791,9 +1082,9 @@ document.addEventListener("DOMContentLoaded", function () {
     </section>
 
     <aside class="sidebar">
-        <h3>Filtre</h3>
+      
         <label>Catégorie</label>
-        <select onchange="filterType(this.value)">
+        <select onchange="filterType(this.value)" style="border-radius: 12px;">
             <option value="">Toutes</option>
             <option>Gâteaux</option>
             <option>Gâteaux de cérémonie</option>
@@ -935,5 +1226,28 @@ eventBannerImg.src = bannerImage;
 eventBannerImg.alt = altText;
 </script>
 -->
+<script>
+   
+function scrollMateriel(direction) {
+  const list = document.getElementById("materielList");
+  const scrollAmount = 160; // largeur approximative d’un item
+  list.scrollBy({
+    left: direction * scrollAmount,
+    behavior: "smooth"
+  });
+}
+
+</script>
+<script>
+function openMenu() {
+  document.getElementById("sideMenu").classList.add("open");
+  document.getElementById("menuOverlay").classList.add("show");
+}
+
+function closeMenu() {
+  document.getElementById("sideMenu").classList.remove("open");
+  document.getElementById("menuOverlay").classList.remove("show");
+}
+</script>
 </body>
 </html>
