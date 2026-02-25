@@ -756,6 +756,97 @@ main { display:flex; padding:20px; gap:20px;}
     z-index: 2000;
     margin-left: 0;
   }
+
+}
+
+/* Caché partout par défaut */
+.call-btn {
+  display: none !important;
+}
+
+/* 📱 Mobile uniquement */
+@media (max-width: 768px) {
+  .call-btn {
+    display: flex !important;
+    position: fixed;
+    bottom: 22px;
+    right: 22px;
+
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+
+    /* 🎨 Couleurs pro (pâtisserie / premium) */
+    background: linear-gradient(135deg, #c97b63, #a5523d);
+    color: #fff;
+
+    align-items: center;
+    justify-content: center;
+
+    font-size: 22px;
+    text-decoration: none;
+
+    box-shadow:
+      0 12px 25px rgba(0,0,0,0.25),
+      inset 0 2px 4px rgba(255,255,255,0.3);
+
+    z-index: 9999;
+    transition: transform .2s ease, box-shadow .2s ease;
+  }
+
+  /* Effet appui (touch) */
+  .call-btn:active {
+    transform: scale(0.92);
+    box-shadow: 0 8px 18px rgba(0,0,0,0.3);
+  }
+
+  /* ✨ Animation douce (attire sans déranger) */
+  .call-btn {
+    animation: soft-pulse 2.4s infinite;
+  }
+
+  @keyframes soft-pulse {
+    0% {
+      box-shadow:
+        0 0 0 0 rgba(201,123,99,.45),
+        0 12px 25px rgba(0,0,0,0.25);
+    }
+    70% {
+      box-shadow:
+        0 0 0 14px rgba(201,123,99,0),
+        0 12px 25px rgba(0,0,0,0.25);
+    }
+    100% {
+      box-shadow:
+        0 0 0 0 rgba(201,123,99,0),
+        0 12px 25px rgba(0,0,0,0.25);
+    }
+  }
+}
+.menu-categories {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.menu-link {
+  width: 100%;
+  background: transparent;
+  border: none;
+  text-align: left;
+  padding: 12px 14px;
+  font-size: 15px;
+  font-weight: bold;
+  color: #c278a4;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.menu-link:hover {
+  background: #ffe6f0;
+  color: #e60073;
+  transform: translateX(6px);
 }
 
 </style>
@@ -1015,14 +1106,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
 <hr>
 
-<a href="#" onclick="filterType('Gâteaux'); closeMenu()">🍰 Gâteaux</a>
-<a href="#" onclick="filterType('Gâteaux de cérémonie'); closeMenu()">🎉 Gâteaux de cérémonie</a>
-<a href="#" onclick="filterType('Cupcakes'); closeMenu()">🧁 Cupcakes</a>
-<a href="#" onclick="filterType('Viennoiseries'); closeMenu()">🥐 Viennoiseries</a>
-<a href="#" onclick="filterType('Salé'); closeMenu()">🥪 Salé</a>
-<a href="#" onclick="filterType('Tartes'); closeMenu()">🥧 Tartes</a>
-<a href="#" onclick="filterType('Desserts'); closeMenu()">🍮 Desserts</a>
-<a href="#" onclick="filterType('Boissons'); closeMenu()">🥤 Boissons</a>
+<!-- Catégories -->
+<div class="menu-categories">
+  <button class="menu-link" data-type="Gâteaux">🍰 Gâteaux</button>
+  <button class="menu-link" data-type="Gâteaux de cérémonie">🎉 Gâteaux de cérémonie</button>
+  <button class="menu-link" data-type="Cupcakes">🧁 Cupcakes</button>
+  <button class="menu-link" data-type="Viennoiseries">🥐 Viennoiseries</button>
+  <button class="menu-link" data-type="Salé">🥪 Salé</button>
+  <button class="menu-link" data-type="Tartes">🥧 Tartes</button>
+  <button class="menu-link" data-type="Desserts">🍮 Desserts</button>
+  <button class="menu-link" data-type="Boissons">🥤 Boissons</button>
+</div>
 
 <hr>
 
@@ -1039,8 +1133,15 @@ document.addEventListener("DOMContentLoaded", function () {
 <div class="account-cart">
   <!-- <button>Mon compte</button>
   <button>🛒</button> -->
+<div class="account-cart">
+
+  <a href="tel:+261336174537" class="call-btn">
+    <i class="fa-solid fa-phone"></i>+
+  </a> 
   <button class="menu-btn" onclick="openMenu()">☰</button>
 </div>
+</div>
+
 </header>
 <!-- Liste des matériels (mobile seulement) -->
 <div class="materiel-wrapper">
@@ -1108,9 +1209,9 @@ document.addEventListener("DOMContentLoaded", function () {
         <form id="orderForm">
             <input type="text" id="customerName" placeholder="Votre nom" required>
             <input type="tel" id="customerPhone" placeholder="Numéro de téléphone" required>
-            <textarea id="customerMessage" placeholder="Message (optionnel)"></textarea>
+            <textarea id="customerMessage" placeholder="Message "></textarea>
             <div id="orderInfo">
-                <p>Date de commande : <span id="commandeDate"></span></p>
+                <p> <span id="commandeDate"></span></p>
                 <label for="renduInput">Date de rendu estimée :</label>
                 <input type="date" id="renduInput" required>
             </div>
@@ -1174,7 +1275,7 @@ document.addEventListener("DOMContentLoaded", function () {
         <div class="footer-contact">
             <h4>Contact</h4>
             <p><i class="fa-solid fa-location-dot"></i> Antananarivo, Madagascar</p>
-            <p><i class="fa-solid fa-phone"></i> +261 34 00 000 00</p>
+            <p><i class="fa-solid fa-phone"></i> +261 33 61 745 37</p>
             <p><i class="fa-solid fa-envelope"></i> contact@planete-gateau.com</p>
 
             <div class="footer-social">
@@ -1248,6 +1349,41 @@ function closeMenu() {
   document.getElementById("sideMenu").classList.remove("open");
   document.getElementById("menuOverlay").classList.remove("show");
 }
+</script>
+<script>
+function scrollToProductsSmart() {
+  const products = document.getElementById("products");
+  if (!products) return;
+
+  // hauteur réelle du header (change selon mobile / desktop)
+  const header = document.querySelector("header");
+  const headerHeight = header ? header.offsetHeight : 0;
+
+  // position exacte du bloc produits
+  const y =
+    products.getBoundingClientRect().top +
+    window.pageYOffset -
+    headerHeight -
+    12; // petit espace visuel
+
+  window.scrollTo({
+    top: y,
+    behavior: "smooth"
+  });
+}
+
+document.querySelectorAll(".menu-link").forEach(btn => {
+  btn.addEventListener("click", () => {
+    // 1️⃣ Filtrer
+    filterType(btn.dataset.type);
+
+    // 2️⃣ Fermer menu
+    closeMenu();
+
+    // 3️⃣ Scroller après rendu DOM
+    setTimeout(scrollToProductsSmart, 300);
+  });
+});
 </script>
 </body>
 </html>
